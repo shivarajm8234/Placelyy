@@ -1,0 +1,12 @@
+{
+  "rules": {
+    "documents": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.email == 'shivarajmani2005@gmail.com'"
+    },
+    "files": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.email == 'shivarajmani2005@gmail.com'"
+    }
+  }
+}

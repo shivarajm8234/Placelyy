@@ -1,0 +1,22 @@
+[
+  {
+    "id": "placement-handbook",
+    "title": "Placement Handbook",
+    "description": "Overview of the campus placement process, eligibility, and timelines.",
+    "type": "html",
+    "category": "guide",
+    "url": "/documents/placement-handbook.html",
+    "tags": ["handbook", "process", "eligibility"],
+    "updatedAt": "2026-09-10"
+  },
+  {
+    "id": "interview-prep",
+    "title": "Interview Preparation Notes",
+    "description": "Core topics, behavioural prompts, and company-specific prep tips.",
+    "type": "html",
+    "category": "prep",
+    "url": "/documents/interview-prep.html",
+    "tags": ["interview", "aptitude", "hr"],
+    "updatedAt": "2026-09-10"
+  }
+]
