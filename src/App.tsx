@@ -5,6 +5,7 @@ import { RequireAuth } from './auth/RequireAuth'
 import { HomePage } from './pages/HomePage'
 import { LibraryPage } from './pages/LibraryPage'
 import { LoginPage } from './pages/LoginPage'
+import { PrepStudioPage } from './pages/PrepStudioPage'
 import { UploadPage } from './pages/UploadPage'
 import { ViewerPage } from './pages/ViewerPage'
 
@@ -27,6 +28,22 @@ export default function App() {
             element={
               <RequireAuth>
                 <LibraryPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/prep"
+            element={
+              <RequireAuth>
+                <PrepStudioPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/prep/:id"
+            element={
+              <RequireAuth>
+                <PrepStudioPage />
               </RequireAuth>
             }
           />

@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Link, Navigate, useLocation } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 
 export function LoginPage() {
-  const { user, loading, error, signInWithGoogle } = useAuth()
+  const { user, loading, error, signInWithGoogle, continueAsGuest } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
   const [busy, setBusy] = useState(false)
   const from =
     (location.state as { from?: string } | null)?.from &&
@@ -12,7 +13,7 @@ export function LoginPage() {
       ? (location.state as { from: string }).from
       : '/'
 
-  if (!loading && user) {
+  if (!loading && user && !user.isAnonymous) {
     return <Navigate to={from} replace />
   }
 
@@ -20,8 +21,19 @@ export function LoginPage() {
     setBusy(true)
     try {
       await signInWithGoogle()
+      navigate(from, { replace: true })
     } catch {
       // error surfaced via context
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleGuest() {
+    setBusy(true)
+    try {
+      await continueAsGuest()
+      navigate(from, { replace: true })
     } finally {
       setBusy(false)
     }
@@ -36,8 +48,7 @@ export function LoginPage() {
         </Link>
         <h1>Sign in to open your placement library</h1>
         <p>
-          Documents are stored in Firebase Realtime Database on the free Spark
-          plan. Sign in with Google to continue.
+          Sign in with Google to save notes, documents, and preparation history across sessions.
         </p>
         <button
           type="button"
@@ -47,6 +58,23 @@ export function LoginPage() {
         >
           {busy ? 'Opening Google…' : 'Continue with Google'}
         </button>
+
+        <div className="login-divider">
+          <span>or preview without saving</span>
+        </div>
+
+        <button
+          type="button"
+          className="btn btn--secondary btn--guest"
+          onClick={() => void handleGuest()}
+          disabled={busy || loading}
+        >
+          {busy ? 'Entering Guest Mode…' : 'Continue as Guest'}
+        </button>
+        <p className="login-guest-note">
+          Guest mode lets you browse the library, edit in Prep Studio, and export PDFs. <strong>Nothing will be saved</strong> to the database.
+        </p>
+
         {error && <p className="login-page__error">{error}</p>}
       </div>
     </div>

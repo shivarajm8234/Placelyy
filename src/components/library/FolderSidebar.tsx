@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
 import { deleteDocument, moveDocument } from '../../lib/documents'
+import { createNewNotebook, saveNotebook } from '../../lib/notebooks'
 import {
   CATEGORY_LABELS,
   CATEGORY_ORDER,
@@ -16,11 +18,43 @@ interface Props {
 }
 
 export function FolderSidebar({ documents, loading, error }: Props) {
-  const { isAdmin } = useAuth()
+  const navigate = useNavigate()
+  const { user, isAdmin } = useAuth()
   const { openIds, activeId, openDoc } = useWorkspace()
   const [folder, setFolder] = useState<'all' | DocumentCategory>('all')
   const [query, setQuery] = useState('')
   const [busyId, setBusyId] = useState<string | null>(null)
+  const [creatingNotebook, setCreatingNotebook] = useState(false)
+
+  async function handleCreatePrepNotebook() {
+    setCreatingNotebook(true)
+    try {
+      const defaultTitle = `Prep Note ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+      const title = prompt('Enter notebook title:', defaultTitle)
+      if (!title) {
+        setCreatingNotebook(false)
+        return
+      }
+      const newNb = createNewNotebook(
+        title,
+        'prep',
+        'ruled',
+        user?.uid,
+        user?.email || undefined,
+        user?.displayName || undefined,
+      )
+      await saveNotebook(newNb, {
+        uid: user?.uid,
+        email: user?.email,
+        displayName: user?.displayName,
+      })
+      openDoc(newNb.id)
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Could not create notebook')
+    } finally {
+      setCreatingNotebook(false)
+    }
+  }
 
   const counts = useMemo(() => {
     const map = Object.fromEntries(
@@ -102,6 +136,26 @@ export function FolderSidebar({ documents, loading, error }: Props) {
             {CATEGORY_LABELS[key]} <span>{counts[key]}</span>
           </button>
         ))}
+      </div>
+
+      <div className="lib-sidebar__quick-prep">
+        <button
+          type="button"
+          className="btn btn--primary btn--sm lib-sidebar__prep-btn"
+          onClick={() => void handleCreatePrepNotebook()}
+          disabled={creatingNotebook}
+          title="Create a new interactive lined notebook"
+        >
+          {creatingNotebook ? 'Creating…' : '+ New Note'}
+        </button>
+        <button
+          type="button"
+          className="btn btn--ghost btn--sm lib-sidebar__prep-btn"
+          onClick={() => navigate('/prep')}
+          title="Open full-screen digital notebook studio"
+        >
+          Open Studio
+        </button>
       </div>
 
       {loading && <p className="library__status">Syncing…</p>}

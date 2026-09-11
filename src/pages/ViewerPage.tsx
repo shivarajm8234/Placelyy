@@ -1,13 +1,21 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext'
+import { getUserNotebookId } from '../lib/notebooks'
 import { SiteHeader } from '../components/SiteHeader'
 import { DocumentContent } from '../components/library/DocumentContent'
+import { PrepNotebookEditor } from '../components/prep/PrepNotebookEditor'
 import { useDocuments } from '../hooks/useDocuments'
 import { CATEGORY_LABELS } from '../types/document'
 
 export function ViewerPage() {
   const { id } = useParams<{ id: string }>()
+  const { user } = useAuth()
   const { documents, loading, error } = useDocuments()
   const doc = documents.find((d) => d.id === id)
+
+  const [viewMode, setViewMode] = useState<'split' | 'doc' | 'notes'>('split')
+  const userNotebookId = doc ? getUserNotebookId(doc.id, user?.uid) : ''
 
   return (
     <div className="page page--viewer">
@@ -46,12 +54,66 @@ export function ViewerPage() {
                   )}
                 </p>
               </div>
-              <Link className="btn btn--ghost" to="/library">
-                Open in workspace
-              </Link>
+              <div className="viewer__actions">
+                {doc.type !== 'notebook' && (
+                  <div className="doc-pane__view-toggle" role="group">
+                    <button
+                      type="button"
+                      className={`btn btn--sm ${viewMode === 'split' ? 'btn--primary' : 'btn--ghost'}`}
+                      onClick={() => setViewMode('split')}
+                    >
+                      Split View
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn btn--sm ${viewMode === 'doc' ? 'btn--primary' : 'btn--ghost'}`}
+                      onClick={() => setViewMode('doc')}
+                    >
+                      Doc
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn btn--sm ${viewMode === 'notes' ? 'btn--primary' : 'btn--ghost'}`}
+                      onClick={() => setViewMode('notes')}
+                    >
+                      Notes
+                    </button>
+                  </div>
+                )}
+                <Link className="btn btn--ghost btn--sm" to="/library">
+                  Workspace
+                </Link>
+              </div>
             </div>
+
             <div className="viewer__frame-wrap">
-              <DocumentContent doc={doc} />
+              {doc.type === 'notebook' ? (
+                <PrepNotebookEditor initialDocId={doc.id} isEmbeddedPane />
+              ) : viewMode === 'split' ? (
+                <div className="doc-pane__split-container">
+                  <div className="doc-pane__split-half doc-pane__split-half--doc">
+                    <DocumentContent doc={doc} />
+                  </div>
+                  <div className="doc-pane__split-divider" />
+                  <div className="doc-pane__split-half doc-pane__split-half--notes">
+                    <PrepNotebookEditor
+                      key={userNotebookId}
+                      initialDocId={userNotebookId}
+                      defaultTitle={`${doc.title} - Notes`}
+                      isEmbeddedPane
+                    />
+                  </div>
+                </div>
+              ) : viewMode === 'doc' ? (
+                <DocumentContent doc={doc} />
+              ) : (
+                <PrepNotebookEditor
+                  key={userNotebookId}
+                  initialDocId={userNotebookId}
+                  defaultTitle={`${doc.title} - Notes`}
+                  isEmbeddedPane
+                />
+              )}
             </div>
           </>
         )}

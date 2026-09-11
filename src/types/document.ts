@@ -1,4 +1,98 @@
-export type DocumentType = 'pdf' | 'html' | 'txt' | 'other'
+export type DocumentType = 'pdf' | 'html' | 'txt' | 'notebook' | 'other'
+
+export type PaperStyle = 'ruled' | 'grid' | 'dotted' | 'blank'
+
+export interface NotebookPoint {
+  x: number
+  y: number
+  pressure?: number
+}
+
+export interface NotebookStroke {
+  id: string
+  tool: 'pen' | 'highlighter' | 'eraser'
+  color: string
+  width: number
+  points: NotebookPoint[]
+}
+
+export interface NotebookText {
+  id: string
+  x: number
+  y: number
+  text: string
+  color: string
+  fontSize: number
+  fontFamily: string
+  isBold?: boolean
+  isItalic?: boolean
+  width?: number
+}
+
+export interface NotebookImage {
+  id: string
+  x: number
+  y: number
+  width: number
+  height: number
+  src: string // data URL / image source
+}
+
+export interface NotebookShape {
+  id: string
+  type: 'rect' | 'circle' | 'line' | 'arrow'
+  startX: number
+  startY: number
+  endX: number
+  endY: number
+  color: string
+  width: number
+  fillColor?: string
+}
+
+export interface NotebookPageData {
+  id: string
+  pageNumber: number
+  paperStyle: PaperStyle
+  strokes: NotebookStroke[]
+  texts: NotebookText[]
+  images: NotebookImage[]
+  shapes: NotebookShape[]
+}
+
+export interface NotebookDocumentData {
+  id: string
+  title: string
+  category: DocumentCategory
+  createdAt: string
+  updatedAt: string
+  paperStyle: PaperStyle
+  pages: NotebookPageData[]
+  userId?: string
+  userEmail?: string
+  userName?: string
+  docId?: string
+}
+
+export interface UserProfile {
+  uid: string
+  email: string | null
+  displayName: string | null
+  photoURL: string | null
+  lastActive: string
+  workCount?: number
+}
+
+export interface UserWorkSummary {
+  id: string
+  title: string
+  docId?: string
+  updatedAt: string
+  pageCount: number
+  userId: string
+  userEmail?: string
+  userName?: string
+}
 
 export type DocumentCategory =
   | 'ai'

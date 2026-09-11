@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { loadDocumentProgressive } from '../../lib/documents'
 import type { PlacementDocument } from '../../types/document'
+import { PrepNotebookEditor } from '../prep/PrepNotebookEditor'
 import { PdfCanvasViewer } from './PdfCanvasViewer'
 
 interface Props {
@@ -15,6 +16,7 @@ export function DocumentContent({ doc }: Props) {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (doc.type === 'notebook') return
     let cancelled = false
     let url: string | null = null
 
@@ -64,6 +66,10 @@ export function DocumentContent({ doc }: Props) {
 
   if (error) {
     return <p className="library__status library__status--error">{error}</p>
+  }
+
+  if (doc.type === 'notebook') {
+    return <PrepNotebookEditor initialDocId={doc.id} isEmbeddedPane />
   }
 
   if (doc.type === 'pdf') {

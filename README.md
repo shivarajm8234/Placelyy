@@ -23,4 +23,3 @@ npm run deploy
 ```
 
 Deploys Hosting + Realtime Database rules (admin write locked to your email).
-# Placelyy

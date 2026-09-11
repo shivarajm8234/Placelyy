@@ -1,12 +1,28 @@
 {
   "rules": {
     "documents": {
-      ".read": "auth != null",
+      ".read": true,
       ".write": "auth != null && auth.token.email == 'shivarajmani2005@gmail.com'"
     },
     "files": {
-      ".read": "auth != null",
+      ".read": true,
       ".write": "auth != null && auth.token.email == 'shivarajmani2005@gmail.com'"
+    },
+    "users": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && (auth.uid == $uid || auth.token.email == 'shivarajmani2005@gmail.com')"
+      }
+    },
+    "notebooks": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "user_works": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && (auth.uid == $uid || auth.token.email == 'shivarajmani2005@gmail.com')"
+      }
     }
   }
 }

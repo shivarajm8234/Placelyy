@@ -3,7 +3,7 @@ import { SiteHeader } from '../components/SiteHeader'
 import { useAuth } from '../auth/AuthContext'
 
 export function HomePage() {
-  const { user, isAdmin } = useAuth()
+  const { user, isGuest, isAdmin } = useAuth()
 
   return (
     <div className="page">
@@ -15,9 +15,7 @@ export function HomePage() {
             <p className="hero__eyebrow">Campus placements</p>
             <h1 className="hero__brand">Placelyy</h1>
             <p className="hero__lede">
-              Open multiple PDFs side by side, jump folders fast, and load the
-              first pages before the rest — signed in as{' '}
-              {user?.displayName ?? user?.email ?? 'you'}.
+              Welcome to the Placement Learning System{isGuest ? ' (Guest Mode)' : `, ${user?.displayName ?? user?.email ?? 'there'}`}.
             </p>
             <div className="hero__actions">
               <Link className="btn btn--primary" to="/library">
@@ -34,9 +32,7 @@ export function HomePage() {
           </div>
         </section>
       </main>
-      <footer className="site-footer">
-        <p>Placelyy · Spark free · Auth · Realtime Database · Hosting</p>
-      </footer>
+
     </div>
   )
 }
